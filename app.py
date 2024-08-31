@@ -1,13 +1,12 @@
 from flask import Flask, render_template, request, send_file
 import yt_dlp
 import os
+import tempfile
 
 app = Flask(__name__)
 
-# Diretório para salvar os vídeos
-DOWNLOAD_DIR = 'downloads'
-if not os.path.exists(DOWNLOAD_DIR):
-    os.makedirs(DOWNLOAD_DIR)
+# Diretório para salvar os vídeos (será criado no diretório temporário)
+DOWNLOAD_DIR = tempfile.mkdtemp()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -34,7 +33,7 @@ def download_video():
         # Opções de download
         ydl_opts = {
             'format': format_id,
-            'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),  # Salvar apenas no diretório downloads
+            'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),  # Salvar apenas no diretório temporário
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=True)
@@ -50,4 +49,4 @@ def download_video():
         return f"Error: {e}"
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
