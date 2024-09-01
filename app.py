@@ -3,7 +3,9 @@ import yt_dlp
 import os
 import tempfile
 import logging
+import requests
 
+# Configuração básica do logging
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
@@ -12,8 +14,22 @@ app = Flask(__name__)
 # Diretório para salvar os vídeos
 DOWNLOAD_DIR = tempfile.mkdtemp()
 
-# Caminho para o arquivo de cookies
-COOKIE_FILE = 'cookies.txt'  # Coloque o caminho correto para o arquivo de cookies
+# URL externa do arquivo de cookies
+COOKIE_URL = 'https://example.com/cookies.txt'  # Substitua pela URL real do seu arquivo de cookies
+COOKIE_FILE = os.path.join(tempfile.gettempdir(), 'cookies.txt')
+
+# Função para baixar o arquivo de cookies
+def download_cookie_file():
+    try:
+        response = requests.get(COOKIE_URL)
+        with open(COOKIE_FILE, 'wb') as f:
+            f.write(response.content)
+        logging.info("Cookies file downloaded successfully.")
+    except Exception as e:
+        logging.error(f"Error downloading cookies file: {e}")
+
+# Baixa o arquivo de cookies no início
+download_cookie_file()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -26,7 +42,12 @@ def index():
             logging.debug(f"Received video URL: {video_url}")
             ydl_opts = {
                 'quiet': True,
-                'cookiefile': COOKIE_FILE  # Usar os cookies para autenticação
+                'cookiefile': COOKIE_FILE,
+                'http_headers': {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'Referer': 'https://www.youtube.com/',
+                },
             }
             with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                 info_dict = ydl.extract_info(video_url, download=False)
@@ -47,7 +68,12 @@ def download_video():
         ydl_opts = {
             'format': format_id,
             'outtmpl': os.path.join(DOWNLOAD_DIR, '%(title)s.%(ext)s'),
-            'cookiefile': COOKIE_FILE  # Usar os cookies para autenticação
+            'cookiefile': COOKIE_FILE,
+            'http_headers': {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Referer': 'https://www.youtube.com/',
+            },
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info_dict = ydl.extract_info(video_url, download=True)
