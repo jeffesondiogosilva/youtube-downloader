@@ -13,8 +13,20 @@ app = Flask(__name__)
 # Diretório para salvar os vídeos
 DOWNLOAD_DIR = tempfile.mkdtemp()
 
-# Certifique-se de que o caminho para o arquivo de cookies está correto
-COOKIE_FILE = './cookies.txt'
+# Cria um arquivo temporário para cookies em um diretório gravável
+def create_temp_cookie_file():
+    temp_file_path = os.path.join(tempfile.gettempdir(), 'cookies.txt')
+    with open(temp_file_path, 'w') as temp_file:
+        temp_file.write("# Netscape HTTP Cookie File\n")
+        temp_file.write("# http://curl.haxx.se/rfc/cookie_spec.html\n")
+        temp_file.write("# This is a generated file!  Do not edit.\n\n")
+        temp_file.write(".youtube.com\tTRUE\t/\tTRUE\t1728632310\tVISITOR_PRIVACY_METADATA\tCgJCUhIEGgAgVA%3D%3D\n")
+        temp_file.write(".youtube.com\tTRUE\t/\tTRUE\t0\tYSC\tKLr5SOJHWDQ\n")
+        temp_file.write(".youtube.com\tTRUE\t/\tFALSE\t0\twide\t0\n")
+    return temp_file_path
+
+# Defina o arquivo de cookies temporário
+COOKIE_FILE = create_temp_cookie_file()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
