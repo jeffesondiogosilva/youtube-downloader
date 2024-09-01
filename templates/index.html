@@ -71,11 +71,23 @@
             font-size: 1em;
             width: 100%;
         }
+
+        .error-message {
+            color: #FF6347;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>BRAZUCA TUBE DOWNLOAD</h1>
+        
+        <!-- Exibir mensagem de erro se houver -->
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+        
         <form method="POST">
             <input type="text" name="url" placeholder="Insira a URL do vídeo" required>
             <button type="submit">Buscar Vídeo</button>
