@@ -26,7 +26,7 @@ def create_temp_cookie_file():
     return temp_file_path
 
 # Defina o arquivo de cookies temporário
-COOKIE_FILE = create_temp_cookie_file()
+COOKIE_FILE = './cookies.txt'
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -88,4 +88,4 @@ def download_video():
         return f"Error: {e}"
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
