@@ -10,8 +10,8 @@ logging.basicConfig(level=logging.DEBUG,
 
 app = Flask(__name__)
 
-# Diretório para salvar os vídeos
-DOWNLOAD_DIR = tempfile.mkdtemp()
+# Diretório temporário para salvar os vídeos
+DOWNLOAD_DIR = tempfile.gettempdir()
 
 # Cria um arquivo temporário para cookies em um diretório gravável
 def create_temp_cookie_file():
@@ -26,7 +26,7 @@ def create_temp_cookie_file():
     return temp_file_path
 
 # Defina o arquivo de cookies temporário
-COOKIE_FILE = './cookies.txt'
+COOKIE_FILE = create_temp_cookie_file()
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
